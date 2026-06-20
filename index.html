@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Клод — ИИ, с которым не нужно объяснять дважды</title>
+<meta name="description" content="Дизайн-концепция страницы о Клоде: терминальный агент для кода, живой язык и контекст без потерь.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,440;9..144,560;9..144,680&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #121110;
+    --bg-soft: #171513;
+    --surface: #1c1a17;
+    --surface-hi: #221f1c;
+    --border: rgba(244,238,225,0.10);
+    --border-hi: rgba(244,238,225,0.22);
+    --text: #f3ede2;
+    --text-dim: #b4ab9c;
+    --text-faint: #847b6d;
+    --clay: #d97757;
+    --clay-dim: rgba(217,119,87,0.14);
+    --gold: #e3b873;
+    --mint: #a7d3bd;
+
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  *{margin:0; padding:0; box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  a{color:inherit; text-decoration:none;}
+
+  ::selection{ background: var(--clay); color: #1a1410; }
+
+  :focus-visible{
+    outline: 2px solid var(--clay);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--clay);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width: 14px;
+    height: 1px;
+    background: var(--clay);
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(18,17,16,0.78);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav.wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height: 76px;
+  }
+  .logo{
+    font-family: var(--serif);
+    font-weight: 560;
+    font-size: 21px;
+    letter-spacing: -0.01em;
+    display:flex;
+    align-items:center;
+    gap: 9px;
+  }
+  .logo .dot{
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--clay);
+    box-shadow: 0 0 14px 2px rgba(217,119,87,0.55);
+  }
+  .nav-links{
+    display:flex;
+    gap: 36px;
+    font-size: 14.5px;
+    color: var(--text-dim);
+  }
+  .nav-links a{ transition: color .2s ease; }
+  .nav-links a:hover{ color: var(--text); }
+
+  .btn{
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 14.5px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    display:inline-flex;
+    align-items:center;
+    gap: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease;
+  }
+  .btn-primary{
+    background: var(--clay);
+    color: #1a1410;
+  }
+  .btn-primary:hover{ transform: translateY(-1px); opacity: 0.92; }
+  .btn-ghost{
+    border-color: var(--border-hi);
+    color: var(--text);
+  }
+  .btn-ghost:hover{ border-color: var(--clay); color: var(--clay); }
+
+  @media (max-width: 760px){
+    .nav-links{ display:none; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding: 100px 0 70px;
+    position: relative;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .hero h1{
+    font-family: var(--serif);
+    font-weight: 440;
+    font-size: clamp(38px, 5vw, 60px);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    margin: 22px 0 22px;
+  }
+  .hero h1 em{
+    font-style: italic;
+    font-weight: 560;
+    color: var(--clay);
+  }
+  .hero p.lead{
+    font-size: 17.5px;
+    color: var(--text-dim);
+    max-width: 480px;
+    margin-bottom: 34px;
+  }
+  .cta-row{
+    display:flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .access-row{
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .pill{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 99px;
+  }
+
+  /* Terminal */
+  .terminal{
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 30px 70px -25px rgba(0,0,0,0.6);
+  }
+  .term-bar{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-hi);
+  }
+  .term-dot{ width:10px; height:10px; border-radius:50%; background:#3a3531; }
+  .term-title{
+    margin-left: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .term-body{
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    padding: 22px 20px 26px;
+    min-height: 290px;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+  }
+  .term-body .you{ color: var(--gold); }
+  .term-body .claude-label{ color: var(--clay); }
+  .term-body .code{
+    display:block;
+    background: #14110f;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    color: var(--mint);
+    font-size: 12.8px;
+  }
+  .caret{
+    display:inline-block;
+    width: 7px;
+    height: 15px;
+    background: var(--clay);
+    vertical-align: middle;
+    margin-left: 2px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  @media (max-width: 880px){
+    .hero-grid{ grid-template-columns: 1fr; }
+    .hero{ padding-top: 56px; }
+  }
+
+  /* ---------- Section shared ---------- */
+  section{ padding: 96px 0; border-top: 1px solid var(--border); }
+  .section-head{ max-width: 600px; margin-bottom: 56px; }
+  .section-head h2{
+    font-family: var(--serif);
+    font-weight: 440;
+    font-size: clamp(28px, 3.4vw, 40px);
+    letter-spacing: -0.01em;
+    margin-top: 16px;
+  }
+
+  /* ---------- Features ---------- */
+  .feature-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .feature{
+    background: var(--bg);
+    padding: 34px 30px;
+    transition: background .2s ease;
+  }
+  .feature:hover{ background: var(--surface); }
+  .feature svg{
+    width: 26px; height: 26px;
+    stroke: var(--clay);
+    margin-bottom: 22px;
+  }
+  .feature h3{
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 16.5px;
+    margin-bottom: 10px;
+  }
+  .feature p{
+    font-size: 14.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  @media (max-width: 880px){
+    .feature-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px){
+    .feature-grid{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- CTA ---------- */
+  .cta-section{
+    text-align:center;
+    padding: 110px 0;
+  }
+  .cta-section h2{
+    font-family: var(--serif);
+    font-weight: 440;
+    font-size: clamp(30px, 4.4vw, 48px);
+    max-width: 680px;
+    margin: 18px auto 16px;
+    letter-spacing: -0.01em;
+  }
+  .cta-section p{
+    color: var(--text-dim);
+    max-width: 480px;
+    margin: 0 auto 36px;
+    font-size: 15.5px;
+  }
+  .cta-section .eyebrow{ justify-content:center; }
+  .cta-section .eyebrow::before{ display:none; }
+
+  /* ---------- Footer ---------- */
+  footer{
+    border-top: 1px solid var(--border);
+    padding: 40px 0 50px;
+  }
+  .footer-row{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  footer .logo{ font-size: 17px; margin-bottom: 8px; }
+  footer .tagline{ color: var(--text-faint); font-size: 13.5px; }
+  .footer-note{
+    color: var(--text-faint);
+    font-size: 12.5px;
+    max-width: 380px;
+    text-align: right;
+    line-height: 1.6;
+  }
+  .footer-note a{ color: var(--text-dim); border-bottom: 1px dotted var(--border-hi); }
+  @media (max-width: 620px){
+    .footer-note{ text-align:left; max-width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- Дополнительные стили для интерактива ---------- */
+  .terminal-input-area {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    padding: 14px 20px 20px;
+    background: var(--surface);
+  }
+  .terminal-input-area input {
+    flex: 1;
+    background: #0f0d0b;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+  }
+  .terminal-input-area input:focus {
+    border-color: var(--clay);
+  }
+  .terminal-input-area button {
+    background: var(--clay);
+    border: none;
+    color: #1a1410;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 13px;
+    transition: opacity .2s;
+  }
+  .terminal-input-area button:hover { opacity: 0.85; }
+  .terminal-input-area button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Модалка */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--bg-soft);
+    border: 1px solid var(--border-hi);
+    border-radius: 20px;
+    max-width: 560px;
+    width: 100%;
+    padding: 40px 36px;
+    position: relative;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color .2s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal h2 {
+    font-family: var(--serif);
+    font-weight: 440;
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+  .modal p.sub {
+    color: var(--text-dim);
+    margin-bottom: 28px;
+  }
+  .pricing-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .pricing-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .pricing-card:hover { border-color: var(--clay); background: var(--surface-hi); }
+  .pricing-card .plan { font-weight: 600; }
+  .pricing-card .price { color: var(--clay); font-weight: 600; }
+  .pricing-card .desc { font-size: 13px; color: var(--text-faint); }
+  .pricing-card.selected {
+    border-color: var(--clay);
+    background: var(--clay-dim);
+  }
+  .modal .btn-primary {
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 14px;
+  }
+  .modal .footnote {
+    font-size: 12px;
+    color: var(--text-faint);
+    text-align: center;
+    margin-top: 14px;
+  }
+
+  @media (max-width: 500px) {
+    .modal { padding: 28px 20px; }
+  }
+
+  .typing-indicator {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+  .typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background: var(--text-faint);
+    border-radius: 50%;
+    animation: dotPulse 1.2s infinite;
+  }
+  .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotPulse {
+    0%, 60%, 100% { opacity: 0.2; transform: scale(0.8); }
+    30% { opacity: 1; transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="logo"><span class="dot"></span>Клод</div>
+    <div class="nav-links">
+      <a href="#demo">Claude Code</a>
+      <a href="#features">Возможности</a>
+      <a href="#cta">Начать</a>
+    </div>
+    <a class="btn btn-primary" href="#" id="openModalBtn">Открыть Claude →</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">ИИ-ассистент от Anthropic</span>
+      <h1>Клод — ИИ, с которым<br>не нужно объяснять <em>дважды</em></h1>
+      <p class="lead">Пишет и чинит код прямо в терминале, удерживает в памяти целые репозитории и документы, отвечает живым языком — без канцелярита и шаблонных фраз.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#" id="openModalBtn2">Открыть Claude →</a>
+        <a class="btn btn-ghost" href="#features">Посмотреть возможности</a>
+      </div>
+      <div class="access-row">
+        <span class="pill">Чат в браузере</span>
+        <span class="pill">Claude Code · терминал</span>
+        <span class="pill">API для разработчиков</span>
+      </div>
+    </div>
+
+    <div class="terminal" id="demo">
+      <div class="term-bar">
+        <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
+        <span class="term-title">claude — zsh</span>
+      </div>
+      <div class="term-body" id="termBody">
+        <!-- Начальное содержимое будет добавлено скриптом -->
+      </div>
+      <div class="terminal-input-area">
+        <input type="text" id="termInput" placeholder="Введите запрос для Claude..." />
+        <button id="termSendBtn">Отправить</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Возможности</span>
+      <h2>Что отличает Клода</h2>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3"/><path d="M13 15h4"/></svg>
+        <h3>Агент в терминале</h3>
+        <p>Claude Code читает ваш репозиторий, правит файлы и запускает тесты — прямо в проекте, без копирования кода туда-сюда.</p>
+      </div>
+
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 8.5 8.5 0 0 1-4-1L3 20l1-4a8.5 8.5 0 1 1 17-4.5z"/></svg>
+        <h3>Живая речь</h3>
+        <p>Пишет тексты, которые звучат как человек — с интонацией и логикой, а не набором шаблонных оборотов.</p>
+      </div>
+
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5z"/><path d="M2 13l10 5 10-5"/></svg>
+        <h3>Контекст без потерь</h3>
+        <p>Удерживает в памяти сотни страниц документов или всю кодовую базу — и не теряет нить за один длинный диалог.</p>
+      </div>
+
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 9v12"/></svg>
+        <h3>Окно предпросмотра</h3>
+        <p>Код, интерфейсы и графики открываются рядом с диалогом в Artifacts и обновляются на лету, по мере правок.</p>
+      </div>
+
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        <h3>Понимает изображения</h3>
+        <p>Считывает скриншоты, диаграммы и рукописные заметки, превращая их в структурированные данные за секунды.</p>
+      </div>
+
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+        <h3>Бережно с данными</h3>
+        <p>Переписка не становится обучающим материалом без явного согласия — об этом можно почитать в политике Anthropic.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="cta">
+  <div class="wrap">
+    <span class="eyebrow">Дальше — сами</span>
+    <h2>Лучший способ узнать Клода — открыть диалог</h2>
+    <p>Эта страница — дизайн-концепция. Настоящий Клод живёт на официальном сайте Anthropic.</p>
+    <a class="btn btn-primary" href="#" id="openModalBtn3">Перейти на claude.ai →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <div>
+      <div class="logo"><span class="dot"></span>Клод</div>
+      <div class="tagline">Дизайн-концепция страницы о Claude</div>
+    </div>
+    <div class="footer-note">
+      Неофициальная фан-страница, сделана в учебных целях.<br>
+      Claude и Anthropic — товарные знаки своих владельцев. Официальный сайт: <a href="https://www.anthropic.com" target="_blank" rel="noopener">anthropic.com</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Модалка подписки -->
+<div class="modal-overlay" id="subscriptionModal">
+  <div class="modal">
+    <button class="modal-close" id="closeModalBtn">&times;</button>
+    <h2>Доступ к Claude</h2>
+    <p class="sub">Выберите тариф, чтобы начать работу с ИИ-ассистентом.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card" data-plan="basic">
+        <div>
+          <div class="plan">Базовый</div>
+          <div class="desc">Для личных задач и экспериментов</div>
+        </div>
+        <div class="price">$0</div>
+      </div>
+      <div class="pricing-card" data-plan="pro">
+        <div>
+          <div class="plan">Pro</div>
+          <div class="desc">Для профессионалов и команд</div>
+        </div>
+        <div class="price">$20/мес</div>
+      </div>
+      <div class="pricing-card" data-plan="enterprise">
+        <div>
+          <div class="plan">Enterprise</div>
+          <div class="desc">Полный контроль и безопасность</div>
+        </div>
+        <div class="price">$50/мес</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="subscribeBtn">Оформить подписку</button>
+    <div class="footnote">После оплаты откроется доступ к чату с Claude.</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ===== Инициализация терминала с приветствием =====
+  const termBody = document.getElementById('termBody');
+  const termInput = document.getElementById('termInput');
+  const termSendBtn = document.getElementById('termSendBtn');
+
+  // Начальное содержимое терминала
+  function renderInitialTerminal() {
+    termBody.innerHTML = `
+      <div>$ claude</div>
+      <div><span class="you">Вы ›</span> Объясни рекурсию на примере факториала, покажи код на Python</div>
+      <div><br><span class="claude-label">Claude ›</span></div>
+      <div>Рекурсия — это когда функция вызывает саму себя для более простой версии той же задачи.</div>
+      <pre class="code">def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)</pre>
+      <div>Каждый вызов уменьшает n, пока не дойдёт до базового случая (n <= 1) — тогда рекурсия "разворачивается" обратно.</div>
+      <span class="caret"></span>
+    `;
+  }
+  renderInitialTerminal();
+
+  // ===== Логика отправки сообщения в терминале =====
+  let isProcessing = false;
+  let isSubscribed = false; // Флаг подписки
+
+  function addMessageToTerminal(text, type = 'user') {
+    const caret = termBody.querySelector('.caret');
+    if (caret) caret.remove();
+
+    const div = document.createElement('div');
+    if (type === 'user') {
+      div.innerHTML = `<span class="you">Вы ›</span> ${text}`;
+    } else if (type === 'claude') {
+      div.innerHTML = `<br><span class="claude-label">Claude ›</span> <span class="typing-indicator"><span></span><span></span><span></span></span>`;
+    } else if (type === 'claude-text') {
+      div.textContent = text;
+    } else if (type === 'claude-code') {
+      const pre = document.createElement('pre');
+      pre.className = 'code';
+      pre.textContent = text;
+      termBody.appendChild(pre);
+      return;
+    }
+    termBody.appendChild(div);
+
+    const newCaret = document.createElement('span');
+    newCaret.className = 'caret';
+    termBody.appendChild(newCaret);
+    termBody.scrollTop = termBody.scrollHeight;
+  }
+
+  function showSubscriptionModal() {
+    document.getElementById('subscriptionModal').classList.add('active');
+  }
+
+  function handleSend() {
+    if (isProcessing) return;
+    const msg = termInput.value.trim();
+    if (!msg) return;
+
+    // Добавляем сообщение пользователя
+    addMessageToTerminal(msg, 'user');
+    termInput.value = '';
+    termInput.disabled = true;
+    termSendBtn.disabled = true;
+    isProcessing = true;
+
+    setTimeout(() => {
+      const indicators = termBody.querySelectorAll('.typing-indicator');
+      indicators.forEach(el => el.parentElement?.remove());
+
+      if (isSubscribed) {
+        // Если подписка есть — отвечаем
+        const div = document.createElement('div');
+        div.innerHTML = `<span class="claude-label">Claude ›</span> <span style="color: var(--mint);">✅ Спасибо за подписку! Ваш запрос обработан. Вот пример ответа на ваш вопрос.</span>`;
+        termBody.appendChild(div);
+        // Можно добавить код для примера
+        const pre = document.createElement('pre');
+        pre.className = 'code';
+        pre.textContent = 'print("Привет, мир!")';
+        termBody.appendChild(pre);
+      } else {
+        // Заглушка "требуется подписка"
+        const div = document.createElement('div');
+        div.innerHTML = `<span class="claude-label">Claude ›</span> <span style="color: var(--gold);">🔒 Доступ к ответам Claude доступен только по подписке.</span>`;
+        termBody.appendChild(div);
+
+        const payDiv = document.createElement('div');
+        payDiv.style.marginTop = '8px';
+        const payBtn = document.createElement('button');
+        payBtn.className = 'btn btn-primary';
+        payBtn.style.fontSize = '13px';
+        payBtn.style.padding = '6px 16px';
+        payBtn.textContent = 'Оформить подписку →';
+        payBtn.onclick = showSubscriptionModal;
+        payDiv.appendChild(payBtn);
+        termBody.appendChild(payDiv);
+      }
+
+      const caret = document.createElement('span');
+      caret.className = 'caret';
+      termBody.appendChild(caret);
+      termBody.scrollTop = termBody.scrollHeight;
+
+      termInput.disabled = false;
+      termSendBtn.disabled = false;
+      isProcessing = false;
+    }, 800);
+  }
+
+  termSendBtn.addEventListener('click', handleSend);
+  termInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleSend();
+  });
+
+  // ===== Модалка =====
+  const modal = document.getElementById('subscriptionModal');
+  const closeModal = document.getElementById('closeModalBtn');
+  const openBtns = document.querySelectorAll('#openModalBtn, #openModalBtn2, #openModalBtn3');
+  const subscribeBtn = document.getElementById('subscribeBtn');
+  let selectedPlan = 'basic';
+
+  document.querySelectorAll('.pricing-card').forEach(card => {
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+      selectedPlan = this.dataset.plan;
+    });
+  });
+  document.querySelector('.pricing-card[data-plan="basic"]')?.classList.add('selected');
+
+  function openModal() { modal.classList.add('active'); }
+  function closeModalFn() { modal.classList.remove('active'); }
+
+  openBtns.forEach(btn => btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal();
+  }));
+
+  closeModal.addEventListener('click', closeModalFn);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModalFn();
+  });
+
+  subscribeBtn.addEventListener('click', function() {
+    const planNames = { basic: 'Базовый', pro: 'Pro', enterprise: 'Enterprise' };
+    alert(`✅ Подписка "${planNames[selectedPlan] || 'Базовый'}" оформлена!\nДоступ к Claude открыт. (Симуляция)`);
+    isSubscribed = true;
+    closeModalFn();
+
+    // Показываем сообщение об активации в терминале
+    const caret = termBody.querySelector('.caret');
+    if (caret) caret.remove();
+
+    const div = document.createElement('div');
+    div.innerHTML = `<br><span class="claude-label">Claude ›</span> <span style="color: var(--mint);">✅ Подписка активирована! Теперь я полностью доступен. Задавайте любые вопросы.</span>`;
+    termBody.appendChild(div);
+
+    const newCaret = document.createElement('span');
+    newCaret.className = 'caret';
+    termBody.appendChild(newCaret);
+    termBody.scrollTop = termBody.scrollHeight;
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModalFn();
+  });
+
+})();
+</script>
+
+</body>
+</html>
